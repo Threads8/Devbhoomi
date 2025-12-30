@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devbhoomi Yatra | Char Dham & Garhwal Pilgrimage</title>
+    <meta name="description" content="Official guide to Char Dham Yatra, Hemkund Sahib, and Garhwal pilgrimages. Opening dates, registration details, and travel guide.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Custom Config & Logic -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        saffron: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            500: '#f97316',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                        },
+                        himalaya: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        },
+                        winter: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            600: '#0284c7',
+                            800: '#075985',
+                        },
+                        gold: '#fbbf24'
+                    },
+                    fontFamily: {
+                        serif: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        hindi: ['Noto Sans Devanagari', 'sans-serif']
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 1s ease-in-out',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Alpine Data & Logic
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('yatraApp', () => ({
+                mobileMenuOpen: false,
+                scrolled: false,
+                scrollY: 0,
+                activeSlide: 0,
+                slides: [
+                    { 
+                        img: 'https://res.cloudinary.com/dpjdnoqii/image/upload/v1767111683/pexels-shyam-mishra-203327-19271393_ieex9c.jpg', 
+                        title: 'Kedarnath Dham', 
+                        subtitle: 'The Land of Lord Shiva',
+                        caption: 'Experience the divine aura amidst the majestic Himalayas.'
+                    },
+                    { 
+                        img: 'https://res.cloudinary.com/dpjdnoqii/image/upload/v1767111325/badri_alawlk.jpg', 
+                        title: 'Badrinath Dham', 
+                        subtitle: 'Abode of Lord Vishnu',
+                        caption: 'Seek blessings at the holiest shrine of Nar-Narayan.'
+                    },
+                    { 
+                        img: 'https://res.cloudinary.com/dpjdnoqii/image/upload/v1767111559/jayanta-banerjee-4FlfsyfNqUM-unsplash_p2frzk.jpg', 
+                        title: 'Gangotri Dham', 
+                        subtitle: 'Origin of the Holy Ganga',
+                        caption: 'Where the sacred river descends from heaven to earth.'
+                    },
+                    { 
+                        img: 'https://res.cloudinary.com/dpjdnoqii/image/upload/v1767111996/Yamunotri_hctzmv.jpg', 
+                        title: 'Yamunotri Dham', 
+                        subtitle: 'Source of River Yamuna',
+                        caption: 'A sacred journey to the seat of Goddess Yamuna.'
+                    }
+                ],
+                timer: null,
+                
+                init() {
+                    this.start();
+                },
+
+                next() { 
+                    this.activeSlide = (this.activeSlide + 1) % this.slides.length 
+                },
+                
+                start() { 
+                    this.timer = setInterval(() => this.next(), 6000) 
+                },
+                
+                get seasonYear() {
+                    const now = new Date();
+                    return now.getMonth() >= 10 ? now.getFullYear() + 1 : now.getFullYear();
+                },
+
+                get schedule() {
+                    const y = this.seasonYear;
+                    // Database of dates
+                    const db = {
+                        2025: { 
+                            open: '30 April', close: '02 Nov', 
+                            yamunotri: '30 April', gangotri: '30 April', 
+                            kedarnath: '02 May (Est)', badrinath: '04 May (Est)',
+                            hemkundOpen: '25 May', hemkundClose: '10 Oct'
+                        },
+                        2026: { 
+                            open: '19 April', close: '01 Nov', 
+                            yamunotri: '19 April', gangotri: '19 April', 
+                            kedarnath: '22 April (Est)', badrinath: '24 April (Est)',
+                            hemkundOpen: '25 May', hemkundClose: '10 Oct'
+                        },
+                        2027: { 
+                            open: '09 May', close: '31 Oct', 
+                            yamunotri: '09 May', gangotri: '09 May', 
+                            kedarnath: '11 May (Est)', badrinath: '13 May (Est)',
+                            hemkundOpen: '25 May', hemkundClose: '10 Oct'
+                        },
+                        2028: {
+                            open: '28 April', close: '20 Oct',
+                            yamunotri: '28 April', gangotri: '28 April',
+                            kedarnath: '30 April (Est)', badrinath: '02 May (Est)',
+                            hemkundOpen: '25 May', hemkundClose: '10 Oct'
+                        },
+                        2029: {
+                            open: '16 April', close: '08 Nov',
+                            yamunotri: '16 April', gangotri: '16 April',
+                            kedarnath: '18 April (Est)', badrinath: '20 April (Est)',
+                            hemkundOpen: '25 May', hemkundClose: '10 Oct'
+                        }
+                    };
+                    const fallback = {
+                        open: `April/May`, close: `Oct/Nov`,
+                        yamunotri: `Akshaya Tritiya`, gangotri: `Akshaya Tritiya`,
+                        kedarnath: `May (TBA)`, badrinath: `May (TBA)`,
+                        hemkundOpen: `Late May`, hemkundClose: `Oct`
+                    };
+                    return db[y] || fallback;
+                },
+
+                scrollToTop() {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }));
+        });
+
+        // Intersection Observer for Scroll Animations
+        document.addEventListener('DOMContentLoaded', () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        });
+    </script>
+
+    <!-- Alpine.js -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+
+    <style>
+        /* Modern Scroll Reveal Animation - Modified to prevent blank page */
+        .reveal {
+            opacity: 1; /* Changed from 0 to 1 to ensure visibility by default */
+            transform: translateY(0);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+        
+        /* Optional: Re-add animation via JS class if needed, but start visible */
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Staggered Delays for Grid Items */
+        .reveal-delay-100 { transition-delay: 100ms; }
+        .reveal-delay-200 { transition-delay: 200ms; }
+        .reveal-delay-300 { transition-delay: 300ms; }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Smooth Text Shadow */
+        .text-shadow-lg {
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ea580c; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c2410c; 
+        }
+
+        /* Hide Scrollbar for horizontal scroll areas */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased" 
+      x-data="yatraApp" 
+      @scroll.window="scrolled = (window.pageYOffset > 50); scrollY = window.pageYOffset">
+
+    <!-- Navigation -->
+    <nav :class="scrolled ? 'glass-dark py-3 shadow-2xl' : 'bg-transparent py-6'" class="fixed w-full top-0 z-50 transition-all duration-500 ease-out">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 group cursor-pointer">
+                    <div class="w-10 h-10 bg-gradient-to-br from-saffron-500 to-saffron-700 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg border-2 border-gold transform group-hover:rotate-12 transition-transform duration-500">ॐ</div>
+                    <a href="#" class="text-2xl font-serif font-bold tracking-wide text-white drop-shadow-md">Devbhoomi <span class="text-saffron-500">Yatra</span></a>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#home" class="text-white hover:text-saffron-400 transition font-medium tracking-wide relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-saffron-500 after:transition-all hover:after:w-full">Home</a>
+                    <a href="#chardham" class="text-white hover:text-saffron-400 transition font-medium tracking-wide relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-saffron-500 after:transition-all hover:after:w-full">Char Dham</a>
+                    <a href="#winter" class="text-white hover:text-saffron-400 transition font-medium tracking-wide relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-saffron-500 after:transition-all hover:after:w-full">Winter Dhams</a>
+                    <a href="#dates" class="text-white hover:text-saffron-400 transition font-medium tracking-wide relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-saffron-500 after:transition-all hover:after:w-full"><span x-text="seasonYear"></span> Dates</a>
+                    <a href="#more-pilgrims" class="text-white hover:text-saffron-400 transition font-medium tracking-wide relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-saffron-500 after:transition-all hover:after:w-full">Other Pilgrims</a>
+                    <a href="https://registrationandtouristcare.uk.gov.in/" target="_blank" class="bg-gradient-to-r from-saffron-600 to-saffron-500 hover:from-saffron-500 hover:to-saffron-400 text-white px-6 py-2.5 rounded-full font-semibold transition-all shadow-lg hover:shadow-saffron-500/30 transform hover:-translate-y-0.5">Register Now</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-white focus:outline-none">
+                        <svg class="h-8 w-8 drop-shadow-md" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div x-show="mobileMenuOpen" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 -translate-y-4"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             class="md:hidden glass-dark absolute w-full border-t border-gray-700/50 backdrop-blur-xl">
+            <div class="px-4 pt-4 pb-8 space-y-3">
+                <a href="#home" @click="mobileMenuOpen = false" class="block text-white py-2 hover:bg-white/10 rounded px-3 transition">Home</a>
+                <a href="#chardham" @click="mobileMenuOpen = false" class="block text-white py-2 hover:bg-white/10 rounded px-3 transition">Char Dham</a>
+                <a href="#winter" @click="mobileMenuOpen = false" class="block text-white py-2 hover:bg-white/10 rounded px-3 transition">Winter Dhams</a>
+                <a href="#dates" @click="mobileMenuOpen = false" class="block text-white py-2 hover:bg-white/10 rounded px-3 transition"><span x-text="seasonYear"></span> Dates</a>
+                <a href="#more-pilgrims" @click="mobileMenuOpen = false" class="block text-white py-2 hover:bg-white/10 rounded px-3 transition">Other Pilgrims</a>
+                <a href="https://registrationandtouristcare.uk.gov.in/" target="_blank" class="block text-center bg-saffron-600 text-white py-3 rounded-lg font-bold mt-4 shadow-lg">Register for Yatra</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section with Parallax & Dynamic Slideshow -->
+    <header id="home" class="relative h-screen w-full overflow-hidden bg-himalaya-900">
+        <!-- Slides -->
+        <template x-for="(slide, index) in slides" :key="index">
+            <div class="absolute inset-0 transition-all duration-1000 ease-in-out"
+                 :class="activeSlide === index ? 'opacity-100 z-10 scale-100' : 'opacity-0 z-0 scale-105'">
+                
+                <!-- Parallax Image Container -->
+                <div class="w-full h-[120%] -mt-[10%]" 
+                     :style="`transform: translateY(${scrollY * 0.4}px)`">
+                    <img :src="slide.img" class="w-full h-full object-cover" :alt="slide.title">
+                </div>
+                
+                <!-- Overlay Gradient -->
+                <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/80"></div>
+                
+                <!-- Content -->
+                <div class="absolute inset-0 flex flex-col justify-center items-center text-center px-4">
+                    <div class="animate-fade-in relative z-20" :style="`transform: translateY(-${scrollY * 0.2}px)`">
+                        <span class="inline-block py-1 px-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-saffron-400 font-bold tracking-[0.2em] uppercase text-xs md:text-sm mb-4 animate-float">Devbhoomi Uttarakhand</span>
+                        <h1 class="text-5xl md:text-8xl font-serif font-bold text-white mb-4 text-shadow-lg tracking-tight" x-text="slide.title"></h1>
+                        <p class="text-xl md:text-3xl text-gray-100 font-light mb-8 font-serif italic opacity-90" x-text="slide.subtitle"></p>
+                        
+                        <div class="mt-8 flex flex-col sm:flex-row gap-5 justify-center">
+                            <a href="#chardham" class="group bg-white text-gray-900 px-8 py-3.5 rounded-full font-bold transition-all shadow-xl hover:shadow-2xl hover:bg-saffron-50 relative overflow-hidden">
+                                <span class="relative z-10">Explore Dhams</span>
+                                <div class="absolute inset-0 bg-saffron-100 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500"></div>
+                            </a>
+                            <a href="#dates" class="group bg-transparent border-2 border-white/80 text-white px-8 py-3.5 rounded-full font-bold transition-all hover:bg-white/10 backdrop-blur-sm">
+                                <span>Check Dates</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Slide Indicators -->
+        <div class="absolute bottom-10 left-0 right-0 z-20 flex justify-center space-x-3">
+            <template x-for="(slide, index) in slides" :key="index">
+                <button @click="activeSlide = index; clearInterval(timer); start()" 
+                        class="h-2 rounded-full transition-all duration-500"
+                        :class="activeSlide === index ? 'bg-saffron-500 w-12' : 'bg-white/30 hover:bg-white/80 w-2'">
+                </button>
+            </template>
+        </div>
+        
+        <!-- Scroll Down Indicator -->
+        <div class="absolute bottom-8 right-8 z-20 hidden md:block animate-bounce text-white/70">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+        </div>
+    </header>
+
+    <!-- Char Dham Section -->
+    <section id="chardham" class="py-24 bg-white relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute top-0 right-0 w-1/3 h-full bg-saffron-50/30 -skew-x-12 z-0 pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-20 reveal">
+                <h2 class="text-saffron-600 font-bold tracking-[0.2em] uppercase text-sm mb-3">The Sacred Circuit</h2>
+                <h3 class="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-6">Chota Char Dham Yatra</h3>
+                <div class="w-24 h-1.5 bg-gradient-to-r from-saffron-400 to-saffron-600 mx-auto rounded-full"></div>
+                <p class="mt-6 text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">Embark on a journey of liberation (Moksha) through the Garhwal Himalayas. The Yatra traditionally proceeds clockwise: Yamunotri, Gangotri, Kedarnath, and finally Badrinath.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Card 1: Yamunotri -->
+                <div class="reveal reveal-delay-100 group bg-white rounded-2xl shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
+                    <div class="h-64 overflow-hidden relative">
+                        <img src="https://res.cloudinary.com/dpjdnoqii/image/upload/v1767111996/Yamunotri_hctzmv.jpg" alt="Yamunotri" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
+                        <div class="absolute top-4 right-4 bg-white/90 backdrop-blur text-saffron-700 text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">First Dham</div>
+                        <div class="absolute bottom-4 left-4 text-white">
+                             <p class="text-xs font-bold uppercase tracking-wider opacity-80">Goddess Yamuna</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="text-2xl font-serif font-bold text-gray-900 mb-2 group-hover:text-saffron-600 transition-colors">Yamunotri</h4>
+                        <div class="flex items-center text-sm text-gray-500 mb-4 space-x-4">
+                            <span class="flex items-center"><svg class="w-4 h-4 mr-1 text-saffron-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> Uttarkashi</span>
+                            <span class="flex items-center"><svg class="w-4 h-4 mr-1 text-saffron-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg> 3,293m</span>
+                        </div>
+                        <div class="border-t border-gray-100 pt-4 mt-4">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <p class="text-xs font-bold text-gray-400 uppercase">Opening Date</p>
+                                    <p class="text-saffron-600 font-bold text-lg"><span x-text="schedule.yamunotri"></span></p>
+                                </div>
+                                <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Akshaya Tritiya</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Gangotri -->
+                <div class="reveal reveal-delay-200 group bg-white rounded-2xl shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
+                    <div class="h-64 overflow-hidden relative">
+                        <img src="https://res.cloudinary.com/dpjdnoqii/image/upload/v1767111559/jayanta-banerjee-4FlfsyfNqUM-unsplash_p2frzk.jpg" alt="Gangotri" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
+                        <div class="absolute top-4 right-4 bg-white/90 backdrop-blur text-saffron-700 text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">Second Dham</div>
+                        <div class="absolute bottom-4 left-4 text-white">
+                             <p class="text-xs font-bold uppercase tracking-wider opacity-80">Goddess Ganga</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="text-2xl font-serif font-bold text-gray-900 mb-2 group-hover:text-saffron-600 transition-colors">Gangotri</h4>
+                        <div class="flex items-center text-sm text-gray-500 mb-4 space-x-4">
+                            <span class="flex items-center"><svg class="w-4 h-4 mr-1 text-saffron-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> Uttarkashi</span>
+                            <span class="flex items-center"><svg class="w-4 h-4 mr-1 text-saffron-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg> 3,100m</span>
+                        </div>
+                        <div class="border-t border-gray-100 pt-4 mt-4">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <p class="text-xs font-bold text-gray-400 uppercase">Opening Date</p>
+                                    <p class="text-saffron-600 font-bold text-lg"><span x-text="schedule.gangotri"></span></p>
+                                </div>
+                                <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Akshaya Tritiya</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Kedarnath -->
+                <div class="reveal reveal-delay-300 group bg-white rounded-2xl shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-500 transform hover:-translate-y-2 border-2 border-saffron-100 relative">
+                    <div class="h-64 overflow-hidden relative">
+                        <img src="https://res.cloudinary.com/dpjdnoqii/image/upload/v1767111683/pexels-shyam-mishra-203327-19271393_ieex9c.jpg" alt="Kedarnath" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
+                        <div class="absolute top-4 right-4 bg-saffron-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">Third Dham</div>
+                        <div class="absolute bottom-4 left-4 text-white">
+                             <p class="text-xs font-bold uppercase tracking-wider opacity-80">Lord Shiva</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="text-2xl font-serif font-bold text-gray-900 mb-2 group-hover:text-saffron-600 transition-colors">Kedarnath</h4>
+                        <div class="flex items-center text-sm text-gray-500 mb-4 space-x-4">
+                            <span class="flex items-center"><svg class="w-4 h-4 mr-1 text-saffron-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> Rudraprayag</span>
+                            <span class="flex items-center"><svg class="w-4 h-4 mr-1 text-saffron-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg> 3,583m</span>
+                        </div>
+                        <div class="border-t border-gray-100 pt-4 mt-4">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <p class="text-xs font-bold text-gray-400 uppercase">Opening Date</p>
+                                    <p class="text-saffron-600 font-bold text-lg"><span x-text="schedule.kedarnath"></span></p>
+                                </div>
+                                <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Shivratri</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Badrinath -->
+                <div class="reveal reveal-delay-300 group bg-white rounded-2xl shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
+                    <div class="h-64 overflow-hidden relative">
+                        <img src="https://res.cloudinary.com/dpjdnoqii/image/upload/v1767111325/badri_alawlk.jpg" alt="Badrinath" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
+                        <div class="absolute top-4 right-4 bg-white/90 backdrop-blur text-saffron-700 text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">Fourth Dham</div>
+                        <div class="absolute bottom-4 left-4 text-white">
+                             <p class="text-xs font-bold uppercase tracking-wider opacity-80">Lord Vishnu</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="text-2xl font-serif font-bold text-gray-900 mb-2 group-hover:text-saffron-600 transition-colors">Badrinath</h4>
+                        <div class="flex items-center text-sm text-gray-500 mb-4 space-x-4">
+                            <span class="flex items-center"><svg class="w-4 h-4 mr-1 text-saffron-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> Chamoli</span>
+                            <span class="flex items-center"><svg class="w-4 h-4 mr-1 text-saffron-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg> 3,133m</span>
+                        </div>
+                        <div class="border-t border-gray-100 pt-4 mt-4">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <p class="text-xs font-bold text-gray-400 uppercase">Opening Date</p>
+                                    <p class="text-saffron-600 font-bold text-lg"><span x-text="schedule.badrinath"></span></p>
+                                </div>
+                                <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Basant Panchami</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Winter Abodes Section -->
+    <section id="winter" class="py-24 bg-winter-50 border-t border-b border-winter-100 relative overflow-hidden">
+        <!-- Winter Decor -->
+        <div class="absolute top-0 right-0 p-10 opacity-10">
+            <svg width="200" height="200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="text-winter-800 animate-spin-slow">
+                <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93" stroke-linecap="round"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-winter-600 font-bold tracking-[0.2em] uppercase text-sm mb-3">Sheetkalin Pravas</h2>
+                <h3 class="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-4">Winter Abodes</h3>
+                <div class="w-24 h-1.5 bg-gradient-to-r from-winter-400 to-winter-600 mx-auto rounded-full"></div>
+                <p class="mt-6 text-gray-600 max-w-2xl mx-auto">When the high Himalayan shrines close for winter due to heavy snowfall, the deities descend to their winter seats where worship continues.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1: Kharsali -->
+                <div class="reveal reveal-delay-100 bg-white rounded-xl shadow-lg hover:shadow-2xl hover:shadow-winter-100 overflow-hidden border border-winter-100 hover:-translate-y-2 transition-all duration-300">
+                    <div class="h-48 overflow-hidden relative">
+                         <img src="https://res.cloudinary.com/dpjdnoqii/image/upload/v1767113386/Screenshot_2025-12-30_221935_lrznr4.png" class="w-full h-full object-cover filter brightness-110 contrast-90" alt="Kharsali">
+                         <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
+                             <p class="text-white font-bold text-lg">Kharsali</p>
+                             <p class="text-winter-100 text-xs uppercase tracking-wide">Seat of Yamuna</p>
+                         </div>
+                    </div>
+                    <div class="p-5">
+                        <p class="text-sm text-gray-600 mb-3">The idol of Goddess Yamuna is brought here to the <strong>Shani Dev Temple</strong> in a grand procession.</p>
+                        <span class="inline-block bg-winter-100 text-winter-800 text-xs px-2 py-1 rounded font-bold">Nov - Apr</span>
+                    </div>
+                </div>
+
+                <!-- Card 2: Mukhba -->
+                <div class="reveal reveal-delay-200 bg-white rounded-xl shadow-lg hover:shadow-2xl hover:shadow-winter-100 overflow-hidden border border-winter-100 hover:-translate-y-2 transition-all duration-300">
+                    <div class="h-48 overflow-hidden relative">
+                         <img src="https://res.cloudinary.com/dpjdnoqii/image/upload/v1767113487/Screenshot_2025-12-30_222114_hcvgfu.png" class="w-full h-full object-cover filter brightness-110 contrast-90" alt="Mukhba">
+                         <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
+                             <p class="text-white font-bold text-lg">Mukhba</p>
+                             <p class="text-winter-100 text-xs uppercase tracking-wide">Seat of Ganga</p>
+                         </div>
+                    </div>
+                    <div class="p-5">
+                        <p class="text-sm text-gray-600 mb-3">Goddess Ganga resides in the <strong>Ganga Temple</strong> here, near Harsil, amidst pristine apple orchards.</p>
+                        <span class="inline-block bg-winter-100 text-winter-800 text-xs px-2 py-1 rounded font-bold">Nov - Apr</span>
+                    </div>
+                </div>
+
+                <!-- Card 3: Ukhimath -->
+                <div class="reveal reveal-delay-300 bg-white rounded-xl shadow-lg hover:shadow-2xl hover:shadow-winter-100 overflow-hidden border border-winter-100 hover:-translate-y-2 transition-all duration-300">
+                    <div class="h-48 overflow-hidden relative">
+                         <img src="https://res.cloudinary.com/dpjdnoqii/image/upload/v1767113653/Screenshot_2025-12-30_222354_zfoqv3.png" class="w-full h-full object-cover filter brightness-110 contrast-90" alt="Ukhimath">
+                         <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
+                             <p class="text-white font-bold text-lg">Ukhimath</p>
+                             <p class="text-winter-100 text-xs uppercase tracking-wide">Seat of Kedarnath</p>
+                         </div>
+                    </div>
+                    <div class="p-5">
+                        <p class="text-sm text-gray-600 mb-3">The Utsav Doli of Lord Shiva is seated in the <strong>Omkareshwar Temple</strong> during winter months.</p>
+                        <span class="inline-block bg-winter-100 text-winter-800 text-xs px-2 py-1 rounded font-bold">Nov - May</span>
+                    </div>
+                </div>
+
+                <!-- Card 4: Pandukeshwar -->
+                <div class="reveal reveal-delay-300 bg-white rounded-xl shadow-lg hover:shadow-2xl hover:shadow-winter-100 overflow-hidden border border-winter-100 hover:-translate-y-2 transition-all duration-300">
+                    <div class="h-48 overflow-hidden relative">
+                         <img src="https://res.cloudinary.com/dpjdnoqii/image/upload/v1767113776/Screenshot_2025-12-30_222604_ajfif9.png" class="w-full h-full object-cover filter brightness-110 contrast-90" alt="Joshimath">
+                         <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
+                             <p class="text-white font-bold text-lg">Pandukeshwar</p>
+                             <p class="text-winter-100 text-xs uppercase tracking-wide">Seat of Badrinath</p>
+                         </div>
+                    </div>
+                    <div class="p-5">
+                        <p class="text-sm text-gray-600 mb-3">Lord Badri Vishal's Utsav Murti resides at <strong>Yog Dhyan Badri</strong> temple. The Rawal sits at Joshimath.</p>
+                        <span class="inline-block bg-winter-100 text-winter-800 text-xs px-2 py-1 rounded font-bold">Nov - May</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dates Section -->
+    <section id="dates" class="py-24 bg-gray-50 relative">
+         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="reveal bg-white rounded-3xl shadow-2xl overflow-hidden ring-1 ring-black/5">
+                <div class="bg-himalaya-900 px-8 py-12 text-center relative overflow-hidden">
+                    <!-- Decor -->
+                    <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/mandala.png')] animate-pulse-slow"></div>
+                    
+                    <h2 class="text-3xl md:text-5xl font-serif font-bold text-white relative z-10">Yatra Schedule <span x-text="seasonYear"></span></h2>
+                    <p class="text-saffron-400 mt-4 relative z-10 text-lg">Plan your spiritual journey ahead</p>
+                </div>
+                
+                <div class="p-4 md:p-8">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b-2 border-gray-100">
+                                    <th class="py-5 px-6 text-gray-400 font-bold uppercase text-xs tracking-wider">Temple</th>
+                                    <th class="py-5 px-6 text-gray-900 font-bold text-sm md:text-base">Opening Date (Tentative)</th>
+                                    <th class="py-5 px-6 text-gray-900 font-bold text-sm md:text-base">Closing Date (Tentative)</th>
+                                    <th class="py-5 px-6 text-gray-400 font-bold uppercase text-xs tracking-wider">Occasion</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <template x-for="site in [
+                                    { name: 'Yamunotri', open: schedule.yamunotri, close: schedule.close, occ: 'Akshaya Tritiya', color: 'text-saffron-700' },
+                                    { name: 'Gangotri', open: schedule.gangotri, close: schedule.close, occ: 'Akshaya Tritiya', color: 'text-saffron-700' },
+                                    { name: 'Kedarnath', open: schedule.kedarnath, close: schedule.close, occ: 'Maha Shivratri Annc.', color: 'text-saffron-700' },
+                                    { name: 'Badrinath', open: schedule.badrinath, close: schedule.close, occ: 'Basant Panchami Annc.', color: 'text-saffron-700' },
+                                    { name: 'Hemkund Sahib', open: schedule.hemkundOpen, close: schedule.hemkundClose, occ: 'Sikh Pilgrimage', color: 'text-blue-700', bg: 'bg-blue-50/30' }
+                                ]">
+                                    <tr class="hover:bg-orange-50/50 transition duration-300" :class="site.bg || ''">
+                                        <td class="py-5 px-6 font-bold" :class="site.color" x-text="site.name"></td>
+                                        <td class="py-5 px-6 text-gray-700"><span x-text="site.open"></span> <span x-text="seasonYear"></span></td>
+                                        <td class="py-5 px-6 text-gray-500"><span x-text="site.close"></span> <span x-text="seasonYear"></span></td>
+                                        <td class="py-5 px-6 text-xs text-gray-400 uppercase tracking-wider" x-text="site.occ"></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-8 p-6 bg-amber-50 border border-amber-100 rounded-xl flex items-start gap-4">
+                        <div class="bg-amber-100 p-2 rounded-full text-amber-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-amber-900 text-sm mb-1">Important Advisory</h4>
+                            <p class="text-sm text-amber-800 leading-relaxed">
+                                Exact dates for Kedarnath and Badrinath are strictly determined by celestial calculations on Maha Shivratri and Basant Panchami <span x-text="seasonYear"></span> respectively. Please verify with official authorities like BKTC before booking travel.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Other Garhwal Pilgrims -->
+    <section id="more-pilgrims" class="py-24 bg-himalaya-900 text-white relative overflow-hidden">
+        <!-- Ambient Background -->
+        <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-800 via-himalaya-900 to-black opacity-80"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="mb-16 reveal">
+                <h2 class="text-saffron-500 font-bold tracking-wide uppercase mb-2">Beyond the Char Dham</h2>
+                <h3 class="text-4xl md:text-5xl font-serif font-bold text-white">Jewels of Garhwal</h3>
+                <p class="text-gray-400 mt-4 text-lg">Explore the mystical confluences and sacred heights of the Garhwal region.</p>
+            </div>
+
+            <!-- Horizontal Scroll Container -->
+            <div class="flex overflow-x-auto space-x-8 pb-12 snap-x snap-mandatory hide-scrollbar">
+                
+                <!-- Hemkund Sahib -->
+                <div class="min-w-[320px] md:min-w-[400px] bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden snap-center hover:bg-white/10 transition-colors duration-300">
+                    <div class="h-56 overflow-hidden">
+                        <img src="https://res.cloudinary.com/dpjdnoqii/image/upload/v1767112118/Sri_Hemkund_Sahib_q3nfdk.jpg" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700" alt="Hemkund Sahib">
+                    </div>
+                    <div class="p-6">
+                        <h4 class="text-2xl font-bold font-serif mb-2 text-white">Hemkund Sahib</h4>
+                        <p class="text-sm text-saffron-400 mb-4 font-semibold uppercase tracking-wider">Highest Sikh Gurudwara</p>
+                        <p class="text-gray-300 leading-relaxed">A star-shaped Gurudwara by a glacial lake, surrounded by seven snow-capped peaks. A test of faith and endurance.</p>
+                        <div class="mt-6 flex items-center justify-between">
+                             <span class="text-xs font-mono bg-white/10 px-3 py-1.5 rounded text-gray-300">Opens May <span x-text="seasonYear"></span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Triyuginarayan Temple (New Option) -->
+                <div class="min-w-[320px] md:min-w-[400px] bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden snap-center hover:bg-white/10 transition-colors duration-300">
+                    <div class="h-56 overflow-hidden relative">
+                        <img src="https://res.cloudinary.com/dpjdnoqii/image/upload/v1767112347/pexels-travel-ride-2147630026-29684278_fdvebk.jpg" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700" alt="Triyuginarayan">
+                        <div class="absolute top-4 right-4 bg-saffron-600 text-white text-xs font-bold px-3 py-1 rounded-full">Wedding Destination</div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="text-2xl font-bold font-serif mb-2 text-white">Triyuginarayan</h4>
+                        <p class="text-sm text-saffron-400 mb-4 font-semibold uppercase tracking-wider">Celestial Union</p>
+                        <p class="text-gray-300 leading-relaxed">The sacred site where Lord Shiva married Goddess Parvati. An eternal flame (Akhand Dhuni) has been burning here for three yugas.</p>
+                    </div>
+                </div>
+
+                <!-- Kartik Swami (New Option) -->
+                <div class="min-w-[320px] md:min-w-[400px] bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden snap-center hover:bg-white/10 transition-colors duration-300">
+                    <div class="h-56 overflow-hidden relative">
+                        <img src="https://res.cloudinary.com/dpjdnoqii/image/upload/v1767113247/Screenshot_2025-12-30_221707_svzg9i.png" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700" alt="Kartik Swami">
+                    </div>
+                    <div class="p-6">
+                        <h4 class="text-2xl font-bold font-serif mb-2 text-white">Kartik Swami</h4>
+                        <p class="text-sm text-saffron-400 mb-4 font-semibold uppercase tracking-wider">Crown of Garhwal</p>
+                        <p class="text-gray-300 leading-relaxed">Perched at 3,050m, this temple dedicated to Lord Kartikeya offers a mesmerizing 360-degree view of the Himalayan peaks.</p>
+                    </div>
+                </div>
+
+                <!-- Panch Prayag -->
+                <div class="min-w-[320px] md:min-w-[400px] bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden snap-center hover:bg-white/10 transition-colors duration-300">
+                    <div class="h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1627894483216-2138af692e32?auto=format&fit=crop&w=600" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700" alt="Devprayag">
+                    </div>
+                    <div class="p-6">
+                        <h4 class="text-2xl font-bold font-serif mb-2 text-white">Panch Prayag</h4>
+                        <p class="text-sm text-saffron-400 mb-4 font-semibold uppercase tracking-wider">Five Holy Confluences</p>
+                        <p class="text-gray-300 leading-relaxed">Vishnuprayag, Nandaprayag, Karnaprayag, Rudraprayag, and Devprayag. Where the Alaknanda meets tributaries to form the Ganga.</p>
+                    </div>
+                </div>
+
+                <!-- Tungnath -->
+                <div class="min-w-[320px] md:min-w-[400px] bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden snap-center hover:bg-white/10 transition-colors duration-300">
+                    <div class="h-56 overflow-hidden">
+                        <img src="https://res.cloudinary.com/dpjdnoqii/image/upload/v1767112588/pexels-vikas-bhandari-421561-10432964_ycmcig.jpg" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700" alt="Tungnath">
+                    </div>
+                    <div class="p-6">
+                        <h4 class="text-2xl font-bold font-serif mb-2 text-white">Tungnath</h4>
+                        <p class="text-sm text-saffron-400 mb-4 font-semibold uppercase tracking-wider">Highest Shiva Temple</p>
+                        <p class="text-gray-300 leading-relaxed">Part of the Panch Kedar, located at 3,680m. A moderate trek offering stunning views of Nanda Devi and Chowkhamba.</p>
+                    </div>
+                </div>
+
+                <!-- Dhari Devi -->
+                <div class="min-w-[320px] md:min-w-[400px] bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden snap-center hover:bg-white/10 transition-colors duration-300">
+                    <div class="h-56 overflow-hidden">
+                         <img src="https://res.cloudinary.com/dpjdnoqii/image/upload/v1767112603/dhari_hbygbw.jpg" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700" alt="Dhari Devi">
+                    </div>
+                    <div class="p-6">
+                        <h4 class="text-2xl font-bold font-serif mb-2 text-white">Dhari Devi</h4>
+                        <p class="text-sm text-saffron-400 mb-4 font-semibold uppercase tracking-wider">Guardian of Char Dham</p>
+                        <p class="text-gray-300 leading-relaxed">Located on the banks of Alaknanda. It is mandatory to pay respects here for a successful and safe yatra.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 flex justify-end text-sm text-gray-500 italic animate-pulse">
+                Swipe to explore more &rarr;
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer with Helplines -->
+    <footer class="bg-black text-gray-300 border-t border-gray-800/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-10 h-10 bg-saffron-600 rounded-full flex items-center justify-center text-white font-bold text-xl">ॐ</div>
+                        <span class="text-2xl font-serif font-bold text-white">Devbhoomi Yatra</span>
+                    </div>
+                    <p class="text-gray-400 max-w-sm mb-6 leading-relaxed">Your digital gateway to the Land of Gods. We provide up-to-date information for pilgrims visiting the holy shrines of the Garhwal Himalayas.</p>
+                    
+                    <div class="mt-6 border-t border-gray-800 pt-4 max-w-sm">
+                        <p class="text-xs text-gray-500 uppercase tracking-wide font-bold mb-2">Developed By</p>
+                        <p class="text-white font-medium">Rahul Uniyal</p>
+                        <p class="text-xs text-gray-500 mt-2 mb-1">For Enquiries:</p>
+                        <a href="mailto:gdg.arcade.rahul.290901@gmail.com" class="text-saffron-500 hover:text-saffron-400 text-sm transition break-all">gdg.arcade.rahul.290901@gmail.com</a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h5 class="text-white font-bold mb-6 uppercase tracking-wider text-sm border-b border-gray-800 pb-2">Emergency</h5>
+                    <ul class="space-y-4 text-sm text-gray-400">
+                        <li class="flex items-center group"><span class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center mr-3 group-hover:bg-red-900 transition-colors">📞</span> <strong>1364</strong> <span class="ml-2 text-xs opacity-60">(UK Toll Free)</span></li>
+                        <li class="flex items-center group"><span class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center mr-3 group-hover:bg-red-900 transition-colors">🚑</span> <strong>108</strong> <span class="ml-2 text-xs opacity-60">(Ambulance)</span></li>
+                        <li class="flex items-center group"><span class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center mr-3 group-hover:bg-blue-900 transition-colors">👮</span> <strong>112</strong> <span class="ml-2 text-xs opacity-60">(Police)</span></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h5 class="text-white font-bold mb-6 uppercase tracking-wider text-sm border-b border-gray-800 pb-2">Quick Links</h5>
+                    <ul class="space-y-3 text-sm text-gray-400">
+                        <li><a href="https://registrationandtouristcare.uk.gov.in/" target="_blank" class="hover:text-saffron-500 transition flex items-center"><span class="mr-2">›</span> Registration Portal</a></li>
+                        <li><a href="https://heliyatra.irctc.co.in/" target="_blank" class="hover:text-saffron-500 transition flex items-center"><span class="mr-2">›</span> GMVN/Heli Booking</a></li>
+                        <li><a href="https://uttarakhandtourism.gov.in/" target="_blank" class="hover:text-saffron-500 transition flex items-center"><span class="mr-2">›</span> Tourism Board</a></li>
+                        <li><a href="https://badrinath-kedarnath.gov.in/" target="_blank" class="hover:text-saffron-500 transition flex items-center"><span class="mr-2">›</span> BKTC Committee</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-16 pt-8 text-center text-xs text-gray-600">
+                <p>&copy; <span x-text="seasonYear"></span> Devbhoomi Yatra Guide. Not an official government website.</p>
+                <p class="mt-2">Made with <span class="text-red-900">♥</span> in the Himalayas.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button @click="scrollToTop()" 
+            x-show="scrolled" 
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 translate-y-10"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-300"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 translate-y-10"
+            class="fixed bottom-8 right-8 bg-saffron-600 hover:bg-saffron-700 text-white p-3 rounded-full shadow-2xl z-40 focus:outline-none transform hover:-translate-y-1 transition-all">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+    </button>
+
+    <!-- Alpine Animations Fix -->
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+</body>
+</html>
